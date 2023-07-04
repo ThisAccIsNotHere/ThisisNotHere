@@ -1,0 +1,314 @@
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "DarkWare",
+    LoadingTitle = "be patient monkey",
+    LoadingSubtitle = "by Dark",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "DarkWare",
+        FileName = "CONFIG"
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "DarkWare",
+        Subtitle = "DarkWare",
+        Note = "Enter The Pro Key",
+        FileName = "DarkWare",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = "DarkWareOnTop"
+    }
+})
+
+-- TABS (Combat etc etc)
+
+local Combat = Window:CreateTab("Combat")
+local Blatant = Window:CreateTab("Blatant")
+local Utility = Window:CreateTab("Utility")
+local Visuals = Window:CreateTab("Visuals")
+local World = Window:CreateTab("World")
+local Exploit = Window:CreateTab("Exploits")
+
+Visuals:CreateSection("Main")
+Combat:CreateSection("Main")
+World:CreateSection("Main")
+Utility:CreateSection("Main")
+Exploit:CreateSection("Main")
+Blatant:CreateSection("Main")
+
+-- variables (lp etc)
+local lplr = game:GetService("Players").LocalPlayer
+local cam = game:GetService("Workspace").CurrentCamera
+local KnitClient = debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6)
+local Client = require(game:GetService("ReplicatedStorage").TS.remotes).default
+local CurrentCamera = workspace.CurrentCamera
+local WorldToViewportPoint = CurrentCamera.WorldToViewportPoint
+lighting = game:GetService("Lighting")
+
+
+local getremote = function(script)
+    for r,s in pairs(script) do
+        if s == "Client" then
+            return script[r + 1]
+        end
+    end
+    return ""
+end
+----------------------------------------------------------------------------------------
+local bedwars = {
+    ["SprintController"] = KnitClient.Controllers.SprintController,
+    ["ClientHandlerStore"] = require(lplr.PlayerScripts.TS.ui.store).ClientStore,
+    ["KnockbackUtil"] = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
+    ["SwordRemote"] = getremote(debug.getconstants((KnitClient.Controllers.SwordController).attackEntity)),
+    ["damageTable"] = KnitClient.Controllers.DamageController,
+    ["FovController"] = KnitClient.Controllers.FovController,
+    ["BalloonController"] = KnitClient.Controllers.BalloonController,
+    ["ViewmodelController"] = KnitClient.Controllers.ViewmodelController,
+}
+
+
+do
+    local fov = 0
+    local fovval
+    local ischanged
+    local Enabled = false
+	local FOVCHANGER = Visuals:CreateToggle({
+		Name = "FOV",
+		CurrentValue = false,
+		Flag = "FOVTOGGLE",
+		Callback = function(val)
+			Enabled = val
+            if Enabled then
+             fovval = fov
+             ischanged = cam:GetPropertyChangedSignal("FieldOfView"):Connect(function()
+                 cam.FieldOfView = fovval
+            end)
+            else
+                ischanged:Disconnect()
+                cam.FieldOfView = 80
+            end
+        end
+    })
+    local FOVDISTANCE = Visuals:CreateSlider({
+		Name = "Fov",
+		Range = {1, 120},
+		Increment = 1,
+		Suffix = "Fov",
+		CurrentValue = 22,
+		Flag = "sliderfov",
+		Callback = function(Value)
+			fov = Value
+		end
+	})
+end
+
+do
+local Enabled = false
+local Sprint = Combat:CreateToggle({
+    Name = "Sprint",
+    Flag = "Sprint",
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+       bedwars["SprintController"]:startSprinting()
+        else
+       bedwars["SprintController"]:stopSprinting()
+        end
+    end
+})
+end
+
+
+do 
+local Enabled = false
+local Speed = Combat:CreateToggle({
+    Name = "Speed",
+    Flag = "Speed",
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+           repeat
+            task.wait(0.25)
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.lookVector * 1
+        until not Enabled
+        end
+    end
+})
+end
+
+do
+local Enabled = false
+local NoFall = Combat:CreateToggle({
+    Name = "NoFall",
+    Flag = "NoFall",
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+            repeat
+            task.wait(0.1)
+            game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.GroundHit:FireServer()
+            until not Enabled
+        end
+    end
+})
+end
+
+local LabelName = Visuals:CreateLabel("Thanks Memz#7217 for the chams!")
+
+do
+local Enabled = false 
+local Chams = Visuals:CreateToggle({
+    Name = "Chams",
+    Flag = "Chams", 
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+            repeat
+                task.wait(5)
+                local players = game.Players:GetPlayers()
+
+                for i,v in pairs(players) do
+                    esp = Instance.new("Highlight")
+                    esp.Name = v.Name
+                    esp.FillTransparency = InnerTransparency.Value
+                    esp.FillColor = Color3.new(0.368627, 0.345098, 1)
+                    esp.OutlineColor = Color3.new(0.258824, 0.517647, 1)
+                    esp.OutlineTransparency = 0
+                    esp.Parent = v.Character
+                end
+                game.Players.PlayerAdded:Connect(function(plr)
+                    plr.CharacterAdded:Connect(function(chr)
+                        local esp = Instance.new("Highlight")
+                        esp = Instance.new("Highlight")
+                        esp.Name = v.Name
+                        esp.FillTransparency = 0.5
+                        esp.FillColor = Color3.new(0.368627, 0.345098, 1)
+                        esp.OutlineColor = Color3.new(0.258824, 0.517647, 1)
+                        esp.OutlineTransparency = 0
+                        esp.Parent = v.Character
+                    end)
+                end)
+            until not Enabled
+        end
+    end
+})
+end
+
+do
+local Enabled = false
+local Night = Visuals:CreateToggle({
+    Name = "Night",
+    Flag = "Night", 
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+            lighting.TimeOfDay = "00:00:00"
+        else
+            lighting.TimeOfDay = "12:00:00"
+        end
+    end
+})
+end
+
+do
+local Enabled = false
+local NoBob = Visuals:CreateToggle({
+    Name = "NoBob",
+    Flag = "NBQ",
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+            if v:IsA("Accessory") and v:FindFirstChild("Handle") then
+                v.Handle.Size = v.Handle.Size / 2
+            end
+        end
+    end
+    })
+
+do
+    GravityFlyKeybindCheck = true
+local Enabled = false
+local GravFly = Blatant:CreateToggle({
+    Name = "GravityFly",
+    Flag = "Gravityflyrel",
+    Callback = function(val)
+        Enabled = val
+        if Enabled then
+          workspace.Gravity = 0
+         else
+           workspace.Gravity = 196.2
+          end
+end
+})
+end
+local GravFly = Blatant:CreateKeybind({
+    Name = "GravityFly",
+    CurrentKeybind = "F",
+    HoldToInteract = false,
+    Flag = "gRAVITYfly22",
+    Callback = function(Keybind)
+        if GravityFlyKeybindCheck == true then
+            GravityFlyKeybindCheck = false
+            GravityFly:Set(enabled) -- in rayfield its inverted. So Set(enabled) means to toggle it off
+        else
+            if GravityFlyKeybindCheck == false then
+                GravityFlyKeybindCheck = true
+                GravityFly:Set(not enabled) -- in rayfield its inverted. So Set(not enabled) means to toggle it on
+            end
+        end
+    end,
+})
+end
+
+
+
+
+
+do
+    local Enabled = false
+     local TPFLY; TPFLY = Blatant:CreateToggle({
+            Name = "TP Fly",
+            Flag = "TPFLYREL",
+            Callback = function(val)
+                Enabled = val
+                if Enabled then
+		spawn(function()
+                 repeat
+                    task.wait(0.25)
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.lookVector * 1
+                    wait(0.000000000000000000000000000001)
+                    workspace.Gravity = 0
+                until not Enabled
+                workspace.Gravity = 192.6
+		end)
+                end
+        end
+    })
+    local TPFLY = Blatant:CreateKeybind({
+        Name = "TPFly",
+        CurrentKeybind = "C",
+        HoldToInteract = false,
+        Flag = "fisfehtp",
+        Callback = function(Keybind)
+		TPFLY:Set(not Enabled)
+        end,
+    })
+end
+
+do
+local Enabled = false
+local PartyPopper = Visuals:CreateToggle({
+    Name = "PartyPopper",
+    Flag = "PartyPartymeansparty",
+    Callback = function(val)
+         Enabled = val
+         if Enabled then
+            repeat
+                 task.wait()
+                game:GetService("ReplicatedStorage"):FindFirstChild("events-@easy-games/game-core:shared/game-core-networking@getEvents.Events").useAbility:FireServer("PARTY_POPPER")
+            until not Enabled
+         end
+        end
+     })
+end
